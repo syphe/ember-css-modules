@@ -62,7 +62,7 @@ module.exports = class ClassTransformPlugin {
   }
 
   transformStatement(node) {
-    if (node.path.original === 'local-class') {
+    if (!this.isNodePathLiteral(node.path) && node.path.original === 'local-class') {
       this.transformLocalClassHelperInvocation(node);
     } else {
       this.transformPossibleComponentInvocation(node);
@@ -70,7 +70,7 @@ module.exports = class ClassTransformPlugin {
   }
 
   transformSubexpression(node) {
-    if (node.path.original === 'local-class') {
+    if (!this.isNodePathLiteral(node.path) && node.path.original === 'local-class') {
       this.transformLocalClassHelperInvocation(node);
     }
   }
@@ -244,5 +244,15 @@ module.exports = class ClassTransformPlugin {
     }
 
     return parts;
+  }
+
+  isNodePathLiteral(path) {
+    return {
+      StringLiteral: true,
+      BooleanLiteral: true,
+      NumberLiteral: true,
+      UndefinedLiteral: true,
+      NullLiteral: true
+    }[path.type] ?? false;
   }
 };
